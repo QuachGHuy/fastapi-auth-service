@@ -31,7 +31,7 @@ Built with a modern stack focused on **Performance** and **Developer Experience*
 
 ## 🗺️ Roadmap
 
-Future improvements for MLOps integration:
+Future improvements:
 
 - [ ] **API Key Management:** For Server-to-Server communication.
 - [ ] **Social Login:** Google integration.
