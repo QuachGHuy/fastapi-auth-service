@@ -85,5 +85,5 @@ python -m pytest -v
 ## 👤 Author
 
 **Huy Quach**
-* Github: [@huyquach](https://github.com/huyquach)
-* LinkedIn: [@huyquach-profile](https://linkedin.com/in/huyquach)
+* Github: [@huyquach](https://github.com/QuachGHuy)
+* LinkedIn: [@huyquach-profile](www.linkedin.com/in/gia-huy-quach)
