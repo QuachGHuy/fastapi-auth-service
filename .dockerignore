@@ -1,0 +1,28 @@
+# ---- Git ----
+.git
+.gitignore
+README.md
+
+# ---- Python ----
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+
+# ---- Docker ----
+Dockerfile*
+docker-compose*.yml
+
+# ---- Editor files ----
+.idea/
+.vscode/
+
+# ---- Tests / Docs ----
+tests/
+.pytest_cache/
+
+# ---- Local configs ----
+*.env
