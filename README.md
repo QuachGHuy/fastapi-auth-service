@@ -2,6 +2,8 @@
 
 > A high-performance, secure, and dockerized Authentication Backend built with **Async Python**.
 
+![Socialify Banner](https://socialify.git.ci/QuachGHuy/fastapi-auth-service/image?description=1&font=JetBrains+Mono&language=1&name=1&pattern=Formal+Invitation&theme=Dark)
+<br>
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?logo=fastapi&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql&logoColor=white)
