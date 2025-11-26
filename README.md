@@ -33,7 +33,7 @@ Built with a modern stack focused on **Performance** and **Developer Experience*
 
 ## 🗺️ Roadmap
 
-Future improvements for MLOps integration:
+Future improvements:
 
 - [ ] **API Key Management:** For Server-to-Server communication.
 - [ ] **Social Login:** Google integration.
@@ -87,5 +87,5 @@ python -m pytest -v
 ## 👤 Author
 
 **Huy Quach**
-* Github: [@huyquach](https://github.com/huyquach)
-* LinkedIn: [@huyquach-profile](https://linkedin.com/in/huyquach)
+* Github: https://github.com/QuachGHuy
+* LinkedIn: www.linkedin.com/in/gia-huy-quach
