@@ -73,7 +73,7 @@ Open your browser and navigate to:
 
     Redoc: http://localhost:8000/redoc
 
-📦 Database Migrations (Alembic)
+## 📦 Database Migrations (Alembic)
 
 This project uses Alembic to manage database schema changes.
 
@@ -91,7 +91,7 @@ docker compose exec api alembic revision --autogenerate -m "Describe your change
 # Apply the new migration
 docker compose exec api alembic upgrade head
 ```
-🧪 Development & Testing
+## 🧪 Development & Testing
 
 To run the project manually (without Docker) for debugging or testing:
 
@@ -109,7 +109,6 @@ pip install -r requirements_dev.txt
 ### 3. Run Migrations & Server
 
 ```Bash
-
 # Apply migrations locally
 alembic upgrade head
 
@@ -122,7 +121,7 @@ uvicorn app.main:app --reload --port 9000
 python -m pytest -v
 ```
 
-👤 Author
+## 👤 Author
 
 Huy Quach
 
