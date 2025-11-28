@@ -36,7 +36,7 @@ async def test_register_success(client: AsyncClient):
     """
 
     # Send registration request
-    response = await client.post("/auth/register", json=user_data)
+    response = await client.post("/api/v1/auth/register", json=user_data)
     
     # Verify status code
     assert response.status_code == 201
@@ -65,7 +65,7 @@ async def test_login_oauth2_success(client: AsyncClient):
     """
 
     # Create a user
-    await client.post("/auth/register", json=user_data)
+    await client.post("/api/v1/auth/register", json=user_data)
 
     # Prepare the login form
     login_data = {
@@ -74,7 +74,7 @@ async def test_login_oauth2_success(client: AsyncClient):
     }
 
     # Post to login endpoint using 'data=' for Form Data
-    response = await client.post("/auth/login/form", data=login_data)
+    response = await client.post("/api/v1/auth/login/form", data=login_data)
     
     # Verify status code
     assert response.status_code == 200
@@ -96,7 +96,7 @@ async def test_login_json_success(client: AsyncClient):
     """
 
     # Create a user
-    await client.post("/auth/register", json=user_data)
+    await client.post("/api/v1/auth/register", json=user_data)
     
     # Prepare the login form
     login_data = {
@@ -105,7 +105,7 @@ async def test_login_json_success(client: AsyncClient):
     }
 
     # Post to login endpoint using 'json=' for json data
-    response = await client.post("/auth/login", json=login_data)
+    response = await client.post("/api/v1/auth/login", json=login_data)
 
     # Verify status code
     assert response.status_code == 200
@@ -129,7 +129,7 @@ async def test_access_token_protect(client: AsyncClient):
     """
 
     # Create a user
-    await client.post("/auth/register", json=user_data)
+    await client.post("/api/v1/auth/register", json=user_data)
 
     # Login and retrive Access Token
     login_data = {
@@ -137,13 +137,13 @@ async def test_access_token_protect(client: AsyncClient):
         "password": user_data["password"]
     }
     
-    log_res = await client.post("/auth/login", json=login_data)
+    log_res = await client.post("/api/v1/auth/login", json=login_data)
     token = log_res.json()["access_token"]
 
     # Access protected endpoint
     # NOTE: Header must follow "Bearer <token>" format
     headers = {"Authorization": f"Bearer {token}"}
-    response = await client.get("/users/me", headers=headers)
+    response = await client.get("/api/v1/user/me", headers=headers)
 
     # Verify status code
     assert response.status_code == 200
@@ -170,10 +170,10 @@ async def test_register_duplicate_email(client: AsyncClient):
     """Validation Check: Ensure email uniqueness."""
         
     # Create the first user
-    await client.post("/auth/register", json=user_data)
+    await client.post("/api/v1/auth/register", json=user_data)
 
     # Create the 2nd user with same email
-    response = await client.post("/auth/register", json=user_data_1)
+    response = await client.post("/api/v1/auth/register", json=user_data_1)
 
     # Verify status code & error handing
     assert response.status_code == 400
@@ -183,10 +183,10 @@ async def test_register_duplicate_email(client: AsyncClient):
 async def test_register_duplicate_username(client: AsyncClient):
     """Validation Check: Ensure username uniqueness."""
     # Create the first user
-    await client.post("/auth/register", json=user_data)
+    await client.post("/api/v1/auth/register", json=user_data)
 
     # Create the 2nd user with same username
-    response = await client.post("/auth/register", json=user_data_2)
+    response = await client.post("/api/v1/auth/register", json=user_data_2)
 
     # Verify status code & error handing
     assert response.status_code == 400
@@ -196,7 +196,7 @@ async def test_register_duplicate_username(client: AsyncClient):
 async def test_login_oauth2_wrong_password(client: AsyncClient):
     """Security Check: Reject invalid credentials with wrong password."""
     # Create a user
-    await client.post("/auth/register", json=user_data)
+    await client.post("/api/v1/auth/register", json=user_data)
     
     # Prepare a wrong password login data & login 
     login_data = {
@@ -204,7 +204,7 @@ async def test_login_oauth2_wrong_password(client: AsyncClient):
         "password": "password456" # Invalid password
     }
 
-    response = await client.post("/auth/login/form", data=login_data)
+    response = await client.post("/api/v1/auth/login/form", data=login_data)
 
     # Verify status code & error handing
     assert response.status_code == 401
@@ -215,7 +215,7 @@ async def test_login_json_wrong_username(client: AsyncClient):
     """Security Check: Reject invalid credentials with wrong password."""
     
     # Create a user
-    await client.post("/auth/register", json=user_data)
+    await client.post("/api/v1/auth/register", json=user_data)
 
     # Prepare a wrong password login data & login
     login_data = {
@@ -223,7 +223,7 @@ async def test_login_json_wrong_username(client: AsyncClient):
         "password": user_data["password"]
     }
 
-    response = await client.post("/auth/login", json=login_data)
+    response = await client.post("/api/v1/auth/login", json=login_data)
 
     # Verify status code & error handing
     assert response.status_code == 401
@@ -238,7 +238,7 @@ async def test_access_token_invalid(client: AsyncClient):
     headers = {"Authorization": f"Bearer {invalid_token}"}
 
     # Access protected endpoint with a fake token
-    response = await client.get("/users/me", headers=headers)
+    response = await client.get("/api/v1/user/me", headers=headers)
 
     # Verify status code
     assert response.status_code == 401
