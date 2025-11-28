@@ -59,7 +59,7 @@ cp .env.example .env
 
 ### 2. Run with Docker (Recommended)
 
-This will start the Database, apply migrations, and launch the API server.
+This will start the Database, **automatically apply migrations**, and launch the API server.
 Bash
 ```bash
 docker compose up -d --build
@@ -75,13 +75,7 @@ Open your browser and navigate to:
 
 ## 📦 Database Migrations (Alembic)
 
-This project uses Alembic to manage database schema changes.
-
-Initialize DB (First run):
-```Bash
-# Apply all migrations to the database
-docker compose exec api alembic upgrade head
-```
+This project uses **Alembic** to manage database schema changes.
 
 Create a new migration (after modifying models):
 ```Bash
