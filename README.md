@@ -104,7 +104,7 @@ source .venv/bin/activate # Windows: .venv\Scripts\activate
 ### 2. Install Dependencies
 
 ```Bash
-pip install -r requirements_v.txt
+pip install -r requirements_dev.txt
 ```
 ### 3. Run Migrations & Server
 
@@ -123,6 +123,8 @@ python -m pytest -v
 ```
 
 👤 Author
+
 Huy Quach
+
     Github: https://github.com/QuachGHuy
     LinkedIn: www.linkedin.com/in/gia-huy-quach
