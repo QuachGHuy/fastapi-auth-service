@@ -4,7 +4,8 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from sqlalchemy.pool import StaticPool
 
 from app.main import app
-from app.database import Base, get_db
+from app.db.base import Base
+from app.db.session import get_db
 
 # -------------------------CONFIGURATION------------------------- #
 
