@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
-from app.api.v1 import user, auth 
+from app.api.v1 import user, auth, apikey
 from app.db.session import engine
 from app.db.base import Base
 
@@ -22,6 +22,8 @@ app = FastAPI(
 
 app.include_router(user.router, prefix="/api/v1/user", tags=["User"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
+app.include_router(apikey.router, prefix="/api/v1/api-key", tags=["APIKey"])
+
 
 @app.get("/")
 async def root():

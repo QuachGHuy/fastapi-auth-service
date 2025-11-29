@@ -4,7 +4,7 @@ class Settings(BaseSettings):
     # APP
     PROJECT_NAME: str
     DEBUG: bool
-
+    ENVIRONMENT: str
     # DATABASE
     DB_USER: str
     DB_PWD: str
@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     def DATABASE_URL(self) -> str:
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PWD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
     
+    def ENVIRONMET(self) -> str:
+        return f"{self.ENVIRONMENT}"
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 settings = Settings() # type: ignore 

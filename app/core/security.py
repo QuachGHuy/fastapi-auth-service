@@ -10,15 +10,15 @@ class SecurityUtils:
     pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
     @staticmethod
-    def get_hashed_password(plain_password):
+    def get_hashed_password(plain_password: str) -> str:
         return SecurityUtils.pwd_context.hash(plain_password)
 
     @staticmethod
-    def verify_password(plain_password, hashed_password):
+    def verify_password(plain_password: str, hashed_password :str) -> bool:
         return SecurityUtils.pwd_context.verify(plain_password, hashed_password)
 
     @staticmethod
-    def create_access_token(data: dict):
+    def create_access_token(data: dict) -> str:
         """
         Generate a new JSON Web Token (JWT) for Authentication.
         """
@@ -37,3 +37,8 @@ class SecurityUtils:
         )
         
         return encoded_jwt
+    
+    @staticmethod
+    def create_api_key(length: int = 32) -> str:
+        token = secrets.token_urlsafe(length)
+        return token

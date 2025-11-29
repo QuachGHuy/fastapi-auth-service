@@ -1,4 +1,3 @@
-# app/services/auth_service.py
 from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
