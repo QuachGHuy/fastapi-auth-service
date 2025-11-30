@@ -39,6 +39,7 @@ services:
     
     environment:
       - DB_HOST=db
+      - ENVRONMENT=dev
 
     command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
@@ -65,13 +66,9 @@ services:
     
     environment:
       - DB_HOST=db
-<<<<<<< Updated upstream
-=======
-      - ENVRONMENT=dev
+      - ENVRONMENT=prod
+    
     command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
->>>>>>> Stashed changes
-
-    command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
     ports:
       - "8000:8000"
