@@ -13,7 +13,7 @@ class APIKey(Base):
     user_id : Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"))
     is_active: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
 
-    #user: Mapped["User"] = relationship(back_populates="keys")
+    user: Mapped["User"] = relationship(back_populates="keys")
 
     def __repr__(self) -> str:
-        return f"<APIKey(id={self.key_id}, name='{self.label}', user_id={self.user_id})>"
+        return f"<APIKey(id={self.key_id}, label='{self.label}', user_id={self.user_id})>"

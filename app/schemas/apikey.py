@@ -6,7 +6,7 @@ class APIKeyCreate(BaseModel):
     label: str
 
 class APIKeyResponse(BaseModel): 
-    id: int
+    key_id: int
     key: str    
     label: str
     is_active: bool
