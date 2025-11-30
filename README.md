@@ -59,7 +59,7 @@ cp .env.example .env
 
 ### 2. Run with Docker (Recommended)
 
-This will start the Database, apply migrations, and launch the API server.
+This will start the Database, **automatically apply migrations**, and launch the API server.
 Bash
 ```bash
 docker compose up -d --build
@@ -73,15 +73,9 @@ Open your browser and navigate to:
 
     Redoc: http://localhost:8000/redoc
 
-📦 Database Migrations (Alembic)
+## 📦 Database Migrations (Alembic)
 
-This project uses Alembic to manage database schema changes.
-
-Initialize DB (First run):
-```Bash
-# Apply all migrations to the database
-docker compose exec api alembic upgrade head
-```
+This project uses **Alembic** to manage database schema changes.
 
 Create a new migration (after modifying models):
 ```Bash
@@ -91,7 +85,7 @@ docker compose exec api alembic revision --autogenerate -m "Describe your change
 # Apply the new migration
 docker compose exec api alembic upgrade head
 ```
-🧪 Development & Testing
+## 🧪 Development & Testing
 
 To run the project manually (without Docker) for debugging or testing:
 
@@ -109,7 +103,6 @@ pip install -r requirements_dev.txt
 ### 3. Run Migrations & Server
 
 ```Bash
-
 # Apply migrations locally
 alembic upgrade head
 
@@ -122,7 +115,8 @@ uvicorn app.main:app --reload --port 9000
 python -m pytest -v
 ```
 
-👤 Author
+## 👤 Author
+
 Huy Quach
     Github: https://github.com/QuachGHuy
     LinkedIn: www.linkedin.com/in/gia-huy-quach

@@ -11,8 +11,8 @@ from app.models.apikey import APIKey
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all) 
+    # async with engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.create_all) 
     yield
 
 app = FastAPI(

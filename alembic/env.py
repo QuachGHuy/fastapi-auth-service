@@ -10,11 +10,10 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from app.db.base import Base
-<<<<<<< Updated upstream
-=======
 from app.models import user, apikey
 
->>>>>>> Stashed changes
+from app.models.user import User
+from app.models.apikey import APIKey
 from app.core.config import settings
 
 sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))

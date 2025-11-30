@@ -40,6 +40,8 @@ services:
     environment:
       - DB_HOST=db
 
+    command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
     volumes:
       - .:/auth-api
 
@@ -68,6 +70,8 @@ services:
       - ENVRONMENT=dev
     command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 >>>>>>> Stashed changes
+
+    command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
     ports:
       - "8000:8000"
