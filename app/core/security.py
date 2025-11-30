@@ -39,6 +39,6 @@ class SecurityUtils:
         return encoded_jwt
     
     @staticmethod
-    def create_api_key(length: int = 32) -> str:
+    def create_api_token(length: int = 32) -> str:
         token = secrets.token_urlsafe(length)
         return token

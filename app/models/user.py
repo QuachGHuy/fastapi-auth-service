@@ -15,7 +15,7 @@ class User(Base):
     rank: Mapped[str] = mapped_column(String(20), server_default="Bronze")
     is_active: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
 
-    #keys : Mapped[List["APIKey"]] = relationship(back_populates="user", lazy="selectin", cascade="all, delete-orphan")
+    keys : Mapped[List["APIKey"]] = relationship(back_populates="user", lazy="selectin", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<User(user_id={self.user_id}, username='{self.username}', rank='{self.rank}'), is_active:{self.is_active}>"
