@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str
     DEBUG: bool
     ENVIRONMENT: str
+
     # DATABASE
     DB_USER: str
     DB_PWD: str
