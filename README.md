@@ -50,7 +50,7 @@ Get the system running in **3 steps**:
 
 ### 1. Clone & Configure
 ```bash
-git clone [https://github.com/QuachGHuy/fastapi-auth-service.git](https://github.com/QuachGHuy/fastapi-auth-service.git)
+git clone https://github.com/QuachGHuy/fastapi-auth-service.git
 cd fastapi-auth-service
 
 # Create environment variables from template
@@ -80,10 +80,10 @@ This project uses **Alembic** to manage database schema changes.
 Create a new migration (after modifying models):
 ```Bash
 # Auto-generate migration file based on model changes
-docker compose exec api alembic revision --autogenerate -m "Describe your change here"
+docker compose exec app-prod alembic revision --autogenerate -m "Describe your change here"
 
 # Apply the new migration
-docker compose exec api alembic upgrade head
+docker compose exec app-prod alembic upgrade head
 ```
 ## 🧪 Development & Testing
 
@@ -119,5 +119,10 @@ python -m pytest -v
 
 Huy Quach
 
-    Github: https://github.com/QuachGHuy
-    LinkedIn: www.linkedin.com/in/gia-huy-quach
+Github: [@QuachGHuy](https://github.com/QuachGHuy)
+
+LinkedIn: [Gia Huy Quach](www.linkedin.com/in/gia-huy-quach)
+
+## 📄 License
+
+This project is licensed under the MIT License.
