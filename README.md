@@ -118,6 +118,5 @@ python -m pytest -v
 ## 👤 Author
 
 Huy Quach
-
     Github: https://github.com/QuachGHuy
     LinkedIn: www.linkedin.com/in/gia-huy-quach

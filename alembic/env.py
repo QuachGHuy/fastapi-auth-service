@@ -11,7 +11,6 @@ from alembic import context
 
 from app.db.base import Base
 from app.models import user, apikey
-
 from app.core.config import settings
 
 sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
