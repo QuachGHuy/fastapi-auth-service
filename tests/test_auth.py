@@ -77,7 +77,7 @@ async def test_login_oauth2_success(client: AsyncClient):
     response = await client.post("/api/v1/auth/login/form", data=login_data)
     
     # Verify status code
-    assert response.status_code == 200
+    assert response.status_code == 200, f"Error: {response.text}"
 
     data = response.json()
 
@@ -108,7 +108,7 @@ async def test_login_json_success(client: AsyncClient):
     response = await client.post("/api/v1/auth/login", json=login_data)
 
     # Verify status code
-    assert response.status_code == 200
+    assert response.status_code == 200, f"Error: {response.text}"
 
     data = response.json()
 
@@ -146,7 +146,7 @@ async def test_access_token_protect(client: AsyncClient):
     response = await client.get("/api/v1/user/me", headers=headers)
 
     # Verify status code
-    assert response.status_code == 200
+    assert response.status_code == 200, f"Error: {response.text}"
 
     data = response.json()
 
@@ -176,7 +176,7 @@ async def test_register_duplicate_email(client: AsyncClient):
     response = await client.post("/api/v1/auth/register", json=user_data_1)
 
     # Verify status code & error handing
-    assert response.status_code == 400
+    assert response.status_code == 400, f"Error: {response.text}"
     assert response.json()["detail"] == "Email already registered"
 
 @pytest.mark.asyncio
@@ -189,7 +189,7 @@ async def test_register_duplicate_username(client: AsyncClient):
     response = await client.post("/api/v1/auth/register", json=user_data_2)
 
     # Verify status code & error handing
-    assert response.status_code == 400
+    assert response.status_code == 400, f"Error: {response.text}"
     assert response.json()["detail"] == "Username already registered"
 
 @pytest.mark.asyncio
@@ -207,7 +207,7 @@ async def test_login_oauth2_wrong_password(client: AsyncClient):
     response = await client.post("/api/v1/auth/login/form", data=login_data)
 
     # Verify status code & error handing
-    assert response.status_code == 401
+    assert response.status_code == 401, f"Error: {response.text}"
     assert response.json()["detail"] == "Incorrect username or password"
 
 @pytest.mark.asyncio
@@ -226,7 +226,7 @@ async def test_login_json_wrong_username(client: AsyncClient):
     response = await client.post("/api/v1/auth/login", json=login_data)
 
     # Verify status code & error handing
-    assert response.status_code == 401
+    assert response.status_code == 401, f"Error: {response.text}"
     assert response.json()["detail"] == "Incorrect username or password"
 
 @pytest.mark.asyncio
@@ -241,5 +241,5 @@ async def test_access_token_invalid(client: AsyncClient):
     response = await client.get("/api/v1/user/me", headers=headers)
 
     # Verify status code
-    assert response.status_code == 401
+    assert response.status_code == 401, f"Error: {response.text}"
 
