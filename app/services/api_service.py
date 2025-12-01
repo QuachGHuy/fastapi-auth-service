@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession 
+from sqlalchemy import select
 
 from app.models.apikey import APIKey
 from app.core.security import SecurityUtils
@@ -25,3 +26,7 @@ class APIService:
         await db.refresh(api_key_db)
 
         return api_key_db
+    
+    async def get_apikey(self, db: AsyncSession, user_id: int):
+        result =  await db.execute(select(APIKey).where(APIKey.user_id==user_id))
+        return result.scalar_one_or_none()
