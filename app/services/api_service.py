@@ -1,4 +1,5 @@
-from sqlalchemy.ext.asyncio import AsyncSession 
+from fastapi import HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.models.apikey import APIKey
@@ -30,3 +31,20 @@ class APIService:
     async def get_apikey(self, db: AsyncSession, user_id: int):
         result =  await db.execute(select(APIKey).where(APIKey.user_id==user_id))
         return result.scalar_one_or_none()
+    
+    async def delete_apikey(self, db: AsyncSession, label: str, user_id: int):
+        result = await db.execute(select(APIKey).where(APIKey.user_id==user_id , APIKey.label==label))
+        apikey_db = result.scalar_one_or_none()
+
+
+        if not apikey_db:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"API Key with label '{label}' not found."
+            )
+        
+
+        await db.delete(apikey_db)
+        await db.commit()
+
+        return {"message": "API key deleted successfully"}

@@ -76,3 +76,31 @@ async def test_read_apikey_success(client: AsyncClient, auth_headers):
     assert data["label"] == apikey_payload["label"]
     assert "key" in data
     assert data["is_active"] is True
+
+@pytest.mark.asyncio
+async def test_delete_apikey_success(client: AsyncClient, auth_headers):
+
+    apikey_payload = {
+        "label": "test01",
+    }
+    
+    # Create a new apikey
+    await client.post(
+        "/api/v1/api/create-apikey", 
+        json=apikey_payload, 
+        headers=auth_headers
+    )
+
+    # Delete apikey
+    response = await client.delete(
+        "/api/v1/api/delete-api",
+        params=apikey_payload,
+        headers=auth_headers,
+        )
+    
+    # Verify status code
+    assert response.status_code == 200, f"Error: {response.text}"
+
+    data = response.json()
+
+    assert data["message"] == "API key deleted successfully"
