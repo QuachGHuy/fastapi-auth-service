@@ -46,3 +46,17 @@ async def read_api_key(
         )
     
     return api_db
+
+@router.delete("/delete-api", status_code=status.HTTP_200_OK)
+async def delete_api_key(
+    label: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user),
+):  
+    real_user_id = current_user.user_id
+
+    return await api_service.delete_apikey(
+        label=label,
+        user_id=real_user_id,
+        db=db
+    )
