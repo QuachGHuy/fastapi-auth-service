@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,8 +12,8 @@ router = APIRouter()
 
 api_service = APIService()
 
-@router.post("/create-apikey", response_model=APIKeyResponse, status_code=status.HTTP_201_CREATED)
-async def create_new_api_key(
+@router.post("/create-key", response_model=APIKeyResponse, status_code=status.HTTP_201_CREATED)
+async def create_apikey(
     key_data: APIKeyCreate,
     current_user: UserResponse = Depends(get_current_user), 
     db: AsyncSession = Depends(get_db)
@@ -26,8 +27,8 @@ async def create_new_api_key(
         db=db, 
     )
 
-@router.get("/", response_model=APIKeyResponse, status_code=status.HTTP_200_OK)
-async def read_api_key(
+@router.get("/keys", response_model=List[APIKeyResponse], status_code=status.HTTP_200_OK)
+async def read_apikey(
     current_user: UserResponse = Depends(get_current_user), 
     db: AsyncSession = Depends(get_db)
 ):
@@ -47,8 +48,8 @@ async def read_api_key(
     
     return api_db
 
-@router.delete("/delete-api", status_code=status.HTTP_200_OK)
-async def delete_api_key(
+@router.delete("/delete-key", status_code=status.HTTP_200_OK)
+async def delete_apikey(
     label: str,
     db: AsyncSession = Depends(get_db),
     current_user: UserResponse = Depends(get_current_user),
@@ -59,4 +60,34 @@ async def delete_api_key(
         label=label,
         user_id=real_user_id,
         db=db
+    )
+
+@router.put("/revoke-key", status_code=status.HTTP_200_OK)
+async def revoke_apikey(
+    label: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user),
+    
+):
+    real_user_id = current_user.user_id
+
+    return await api_service.revoke_apikey(
+        label=label,
+        user_id=real_user_id,
+        db=db,
+    )
+
+@router.put("/activate-key", status_code=status.HTTP_200_OK)
+async def activate_apikey(
+    label: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user),
+    
+):
+    real_user_id = current_user.user_id
+
+    return await api_service.activate_apikey(
+        label=label,
+        user_id=real_user_id,
+        db=db,
     )

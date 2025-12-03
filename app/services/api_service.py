@@ -8,6 +8,15 @@ from app.core.config import settings
 
 class APIService:
     async def create_apikey(self, db: AsyncSession, label: str, user_id: int):
+        label_duplicate = await db.execute(select(APIKey).where(APIKey.label==label))
+        label_db = label_duplicate.scalar_one_or_none()
+
+        if label_db:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"APIkey label '{label}' already existed"
+            )
+
         generated_token = SecurityUtils.create_api_token()
 
         if settings.ENVIRONMENT == "prod":
@@ -30,9 +39,49 @@ class APIService:
     
     async def get_apikey(self, db: AsyncSession, user_id: int):
         result =  await db.execute(select(APIKey).where(APIKey.user_id==user_id))
-        return result.scalar_one_or_none()
+        return result.scalars().all()
     
     async def delete_apikey(self, db: AsyncSession, label: str, user_id: int):
+        result = await db.execute(select(APIKey).where(APIKey.user_id==user_id , APIKey.label==label))
+        apikey_db = result.scalar_one_or_none()
+
+
+        if not apikey_db:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"APIKey with label '{label}' not found."
+            )
+        
+
+        await db.delete(apikey_db)
+        await db.commit()
+
+        return {"message": "APIkey deleted successfully"}
+
+    async def revoke_apikey(self, db: AsyncSession, label: str, user_id: int):
+        result = await db.execute(select(APIKey).where(APIKey.user_id==user_id , APIKey.label==label))
+        apikey_db = result.scalar_one_or_none()
+
+
+        if not apikey_db:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"API Key '{label}' not found."
+            )
+        
+        if apikey_db.is_active == False:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"APIkey '{label}' already inactived"
+            )
+        
+        apikey_db.is_active = False
+
+        await db.commit()
+
+        return {"message": "APIkey revoked successfully"}
+    
+    async def activate_apikey(self, db: AsyncSession, label: str, user_id: int):
         result = await db.execute(select(APIKey).where(APIKey.user_id==user_id , APIKey.label==label))
         apikey_db = result.scalar_one_or_none()
 
@@ -43,8 +92,14 @@ class APIService:
                 detail=f"API Key with label '{label}' not found."
             )
         
+        if apikey_db.is_active == True:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"APIkey '{label}' already actived"
+            )
 
-        await db.delete(apikey_db)
+        apikey_db.is_active = True
+
         await db.commit()
 
-        return {"message": "API key deleted successfully"}
+        return {"message": "APIkey activated successfully"}
