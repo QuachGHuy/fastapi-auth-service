@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.schemas.user import UserResponse
-from app.schemas.apikey import APIKeyCreate, APIKeyResponse
+from app.schemas.apikey import APIKeyCreate, APIKeyResponse, APIKeyCreationResponse, APIKeyUpdate
 from app.services.api_service import APIService
 from app.api.deps import get_current_user
 
@@ -12,27 +12,35 @@ router = APIRouter()
 
 api_service = APIService()
 
-@router.post("/create-key", response_model=APIKeyResponse, status_code=status.HTTP_201_CREATED)
+# 1. Create API Key
+@router.post("/create", response_model=APIKeyCreationResponse, status_code=status.HTTP_201_CREATED)
 async def create_apikey(
     key_data: APIKeyCreate,
     current_user: UserResponse = Depends(get_current_user), 
     db: AsyncSession = Depends(get_db)
 ):
-    
+    """
+    Create a new API key for the authenticated user.
+    """
     real_user_id = current_user.user_id 
+
+    key_data_dict = key_data.model_dump(exclude_unset=True)
 
     return await api_service.create_apikey(
         user_id=real_user_id,
-        label=key_data.label,
+        key_data=key_data_dict,
         db=db, 
     )
 
-@router.get("/keys", response_model=List[APIKeyResponse], status_code=status.HTTP_200_OK)
+# 2. Get all API Keys
+@router.get("/", response_model=List[APIKeyResponse], status_code=status.HTTP_200_OK)
 async def read_apikey(
     current_user: UserResponse = Depends(get_current_user), 
     db: AsyncSession = Depends(get_db)
 ):
-    
+    """
+    Retrieve all API keys belonging to the current user.
+    """
     real_user_id = current_user.user_id 
 
     api_db = await api_service.get_apikey(
@@ -40,20 +48,25 @@ async def read_apikey(
         db=db, 
     )
     
+    # Check if the list is empty
     if not api_db:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="apikey not exists"
+            detail="No API keys found."
         )
     
     return api_db
 
-@router.delete("/delete-key", status_code=status.HTTP_200_OK)
+# 3. Delete API Key
+@router.delete("/delete", status_code=status.HTTP_200_OK)
 async def delete_apikey(
     label: str,
     db: AsyncSession = Depends(get_db),
     current_user: UserResponse = Depends(get_current_user),
 ):  
+    """
+    Delete an API key by its label.
+    """
     real_user_id = current_user.user_id
 
     return await api_service.delete_apikey(
@@ -62,32 +75,23 @@ async def delete_apikey(
         db=db
     )
 
-@router.put("/revoke-key", status_code=status.HTTP_200_OK)
-async def revoke_apikey(
-    label: str,
-    db: AsyncSession = Depends(get_db),
+# 4. Update API Key
+@router.patch("/update", status_code=status.HTTP_200_OK)
+async def update_apikey(
+    key_data: APIKeyUpdate,
     current_user: UserResponse = Depends(get_current_user),
-    
+    db: AsyncSession = Depends(get_db)
 ):
+    """
+    Update specific fields (label, description, status) of an existing API key.
+    """
     real_user_id = current_user.user_id
 
-    return await api_service.revoke_apikey(
-        label=label,
-        user_id=real_user_id,
-        db=db,
-    )
+    # Convert Pydantic model to dict, excluding unset fields for partial update
+    key_data_dict = key_data.model_dump(exclude_unset=True)
 
-@router.put("/activate-key", status_code=status.HTTP_200_OK)
-async def activate_apikey(
-    label: str,
-    db: AsyncSession = Depends(get_db),
-    current_user: UserResponse = Depends(get_current_user),
-    
-):
-    real_user_id = current_user.user_id
-
-    return await api_service.activate_apikey(
-        label=label,
+    return await api_service.update_apikey(
+        update_data=key_data_dict,
         user_id=real_user_id,
         db=db,
     )
