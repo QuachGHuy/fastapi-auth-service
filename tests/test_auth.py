@@ -143,7 +143,7 @@ async def test_access_token_protect(client: AsyncClient):
     # Access protected endpoint
     # NOTE: Header must follow "Bearer <token>" format
     headers = {"Authorization": f"Bearer {token}"}
-    response = await client.get("/api/v1/user/me", headers=headers)
+    response = await client.get("/api/v1/users/me", headers=headers)
 
     # Verify status code
     assert response.status_code == 200, f"Error: {response.text}"
@@ -238,7 +238,7 @@ async def test_access_token_invalid(client: AsyncClient):
     headers = {"Authorization": f"Bearer {invalid_token}"}
 
     # Access protected endpoint with a fake token
-    response = await client.get("/api/v1/user/me", headers=headers)
+    response = await client.get("/api/v1/users/me", headers=headers)
 
     # Verify status code
     assert response.status_code == 401, f"Error: {response.text}"
