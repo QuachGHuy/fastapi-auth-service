@@ -8,15 +8,13 @@ class APIKeyCreate(BaseModel):
 
 class APIKeyResponse(BaseModel): 
     key_id: int
+    key: str
     label: str
     description: Optional[str] = None
     is_active: bool
     created_at: Optional[datetime] = None
     
     model_config = ConfigDict(from_attributes=True)
-
-class APIKeyCreationResponse(APIKeyResponse):
-    key: str
 
 class APIKeyUpdate(BaseModel):
     key_id: int

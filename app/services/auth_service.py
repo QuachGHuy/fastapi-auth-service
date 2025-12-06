@@ -18,7 +18,7 @@ class AuthService:
         user = await self.user_service.get_by_username(username = form_data.username, db=db)
 
         # 2. Verify user existence and password hash
-        if not user or not SecurityUtils.verify_password(form_data.password, user.password):
+        if not user or not SecurityUtils.verify_token(form_data.password, user.password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",
@@ -41,7 +41,7 @@ class AuthService:
         user = await self.user_service.get_by_username(username=form_data.username, db=db)
 
         # 2. Verify user existence and password hash
-        if not user or not SecurityUtils.verify_password(form_data.password, user.password):
+        if not user or not SecurityUtils.verify_token(form_data.password, user.password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",

@@ -37,14 +37,16 @@ class APIService:
 
         # 3. Add prefix based on environment
         if settings.ENVIRONMENT == "prod":
-            final_key = f"sk_live_{generated_token}"
+            key = f"sk_live_{generated_token}"
         else:
-            final_key = f"sk_test_{generated_token}"
+            key = f"sk_test_{generated_token}"
+        
+        hashed_key = SecurityUtils.get_hashed_token(key)
         
         # 4. Save to database
         key_db = APIKey(
             user_id=user_id,
-            key=final_key,
+            key=hashed_key,
             is_active=True,
             **key_data
         )
@@ -52,6 +54,8 @@ class APIService:
         db.add(key_db)
         await db.commit()
         await db.refresh(key_db)
+
+        key_db.key = key
 
         return key_db
     

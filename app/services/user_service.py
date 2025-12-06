@@ -35,7 +35,7 @@ class UserService:
                 )
 
         # 2. Get hashed password
-        hashed_pw = SecurityUtils.get_hashed_password(user_in.password)
+        hashed_pw = SecurityUtils.get_hashed_token(user_in.password)
 
         # 3. Create a new user db
         new_user = User(

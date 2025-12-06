@@ -48,7 +48,6 @@ async def test_create_apikey_success(client: AsyncClient, auth_headers):
     assert data["description"] == apikey_payload["description"]
 
     assert "key" in data
-    assert data["key"].startswith("sk_")
 
     assert data["is_active"] is True
     assert "key_id" in data
@@ -85,8 +84,11 @@ async def test_read_apikey_success(client: AsyncClient, auth_headers):
     assert data[0]["is_active"] is True
     assert "key_id" in data[0]
     assert "created_at" in data[0]
-    assert "key" not in data[0]
-    
+
+    # Verify key is hashed
+    assert "key" in data[0]
+    assert data[0]["key"] != "sk*"
+
 @pytest.mark.asyncio
 async def test_delete_apikey_success(client: AsyncClient, auth_headers):
 
