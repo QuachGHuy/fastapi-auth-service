@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.schemas.user import UserResponse
-from app.schemas.apikey import APIKeyCreate, APIKeyResponse, APIKeyCreationResponse, APIKeyUpdate
+from app.schemas.apikey import APIKeyCreate, APIKeyResponse, APIKeyUpdate
 from app.services.api_service import APIService
 from app.api.deps import get_current_user
 
@@ -13,7 +13,7 @@ router = APIRouter()
 api_service = APIService()
 
 # 1. Create API Key
-@router.post("/create", response_model=APIKeyCreationResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/create", response_model=APIKeyResponse, status_code=status.HTTP_201_CREATED)
 async def create_apikey(
     key_data: APIKeyCreate,
     current_user: UserResponse = Depends(get_current_user), 

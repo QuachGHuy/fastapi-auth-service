@@ -10,11 +10,11 @@ class SecurityUtils:
     pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
     @staticmethod
-    def get_hashed_password(plain_password: str) -> str:
+    def get_hashed_token(plain_password: str) -> str:
         return SecurityUtils.pwd_context.hash(plain_password)
 
     @staticmethod
-    def verify_password(plain_password: str, hashed_password :str) -> bool:
+    def verify_token(plain_password: str, hashed_password :str) -> bool:
         return SecurityUtils.pwd_context.verify(plain_password, hashed_password)
 
     @staticmethod
