@@ -76,8 +76,9 @@ async def delete_apikey(
     )
 
 # 4. Update API Key
-@router.patch("/update", status_code=status.HTTP_200_OK)
+@router.patch("/update/{key_id}", status_code=status.HTTP_200_OK)
 async def update_apikey(
+    key_id: int,
     key_data: APIKeyUpdate,
     current_user: UserResponse = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
@@ -91,6 +92,7 @@ async def update_apikey(
     key_data_dict = key_data.model_dump(exclude_unset=True)
 
     return await api_service.update_apikey(
+        key_id=key_id,
         update_data=key_data_dict,
         user_id=real_user_id,
         db=db,

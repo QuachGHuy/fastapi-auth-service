@@ -7,6 +7,7 @@ from app.db.session import get_db
 from app.core.config import settings
 
 from app.models.user import User 
+from app.models.apikey import APIKey
 
 from app.services.user_service import UserService 
 
@@ -51,3 +52,9 @@ async def get_current_user(
         raise credentials_exception
     
     return user
+
+async def validate_apikey(
+        apikey: str,
+        db: AsyncSession = Depends(get_db)
+    ):
+    pass
