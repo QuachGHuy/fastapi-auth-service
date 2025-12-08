@@ -94,13 +94,11 @@ class APIService:
 
         return {"message": "APIkey deleted successfully."}
     
-    async def update_apikey(self, db: AsyncSession, user_id:int, update_data: Dict[str, Any]):
+    async def update_apikey(self, db: AsyncSession, user_id:int, key_id: int, update_data: Dict[str, Any]):
         """
         Update API key details (label, description, is_active) dynamically.
         """
         # 1. Check if key exists and belongs to user
-        key_id = update_data["key_id"]
-
         stmt_key_check = (
             select(APIKey).
             where(APIKey.user_id==user_id, APIKey.key_id==key_id)

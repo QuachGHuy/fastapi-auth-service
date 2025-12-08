@@ -17,7 +17,6 @@ class APIKeyResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class APIKeyUpdate(BaseModel):
-    key_id: int
     label: Optional[str] = None 
     description: Optional[str] = None
     is_active: Optional[bool] = None
