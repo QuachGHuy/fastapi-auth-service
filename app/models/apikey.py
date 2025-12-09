@@ -8,7 +8,8 @@ from app.db.base import Base
 class APIKey(Base):
     __tablename__ = "apikeys"
     key_id : Mapped[int]  = mapped_column(Integer, primary_key=True)
-    key : Mapped[str] = mapped_column(String(100), index=True)
+    prefix: Mapped[str] = mapped_column(String(10), index=True)
+    key : Mapped[str] = mapped_column(String(100))
     label: Mapped[str] = mapped_column(String(50))
     description : Mapped[str] = mapped_column(String(150), nullable=True)
     user_id : Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"))

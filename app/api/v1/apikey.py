@@ -6,7 +6,7 @@ from app.db.session import get_db
 from app.schemas.user import UserResponse
 from app.schemas.apikey import APIKeyCreate, APIKeyResponse, APIKeyUpdate
 from app.services.api_service import APIService
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, validate_apikey
 
 router = APIRouter()
 
@@ -97,3 +97,8 @@ async def update_apikey(
         user_id=real_user_id,
         db=db,
     )
+
+# 5. Validation API key
+@router.get("/protected-api", status_code=status.HTTP_200_OK)
+async def get_data(apikey: APIKeyResponse = Depends(validate_apikey)):
+    return apikey

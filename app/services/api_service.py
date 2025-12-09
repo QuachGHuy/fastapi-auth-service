@@ -41,11 +41,14 @@ class APIService:
         else:
             key = f"sk_test_{generated_token}"
         
-        hashed_key = SecurityUtils.get_hashed_token(key)
+        prefix = key[:10]
+
+        hashed_key = SecurityUtils.get_hashed_token(key[10:])
         
         # 4. Save to database
         key_db = APIKey(
             user_id=user_id,
+            prefix=prefix,
             key=hashed_key,
             is_active=True,
             **key_data
@@ -114,7 +117,7 @@ class APIService:
             )
         
         # 2. Ensure data is provided
-        if len(update_data)==1:
+        if len(update_data)==0:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="No fields provided for update."
@@ -166,3 +169,27 @@ class APIService:
         await db.commit()
 
         return {"message": f"API Key {key_id} updated successfully."}
+    
+    async def verify_key_and_get_key(self, key: str, db: AsyncSession):
+        """
+        Verify API key.
+        """
+        prefix = key[:10]
+        raw_key = key[10:]
+
+        # 1. Check if prefix exists and verify key by raw_key
+        stmt = (
+            select(APIKey).
+            where(APIKey.prefix == prefix)
+        )
+
+        res = await db.execute(stmt)
+        api_key_db = res.scalar_one_or_none()
+
+        if not api_key_db or not SecurityUtils.verify_token(raw_key,api_key_db.key):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid or unauthorized access.",
+            )       
+
+        return api_key_db
