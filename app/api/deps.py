@@ -1,5 +1,5 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, Security, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, APIKeyHeader
 from sqlalchemy.ext.asyncio import AsyncSession
 from jose import jwt, JWTError
 
@@ -10,6 +10,7 @@ from app.models.user import User
 from app.models.apikey import APIKey
 
 from app.services.user_service import UserService 
+from app.services.api_service import APIService
 
 # Define the scheme so Swagger UI knows how to send the token
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login/form")
@@ -18,7 +19,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login/form")
 user_service = UserService()
 
 async def get_current_user(
-        token: str = Depends(oauth2_scheme), 
+        token: str = Security(oauth2_scheme), 
         db: AsyncSession = Depends(get_db)
         ) -> User:
     """
@@ -53,8 +54,36 @@ async def get_current_user(
     
     return user
 
+
+apikey_header_scheme = APIKeyHeader(name="X-API-Key", auto_error=False)
+api_service = APIService()
+
 async def validate_apikey(
-        apikey: str,
+        key_sent: str = Security(apikey_header_scheme),
         db: AsyncSession = Depends(get_db)
-    ):
-    pass
+    ) -> APIKey:
+    """
+    Dependency to validate and retrieve the APIKey.
+    """
+
+    # 1. Check if key_sent is empty
+    if not key_sent:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication failed: API Key is missing.",
+        )
+    
+    # 2. Verify and retrive apikey
+    api_key_db = await api_service.verify_key_and_get_key(
+        key=key_sent,
+        db=db
+    )
+
+    # 3. Check apikey status
+    if not api_key_db.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="API Key is inactive/revoked.",  
+        )
+    
+    return api_key_db
