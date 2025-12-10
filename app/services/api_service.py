@@ -13,7 +13,7 @@ class APIService:
     Service layer handling business logic for API Key management.
     """
 
-    async def create_apikey(self, db: AsyncSession, user_id: int, key_data: Dict[str, Any]):
+    async def create_apikey(self, db: AsyncSession, user_id: int, key_data: Dict[str, Any]) -> APIKey:
         """
         Create a new API key with a unique label for the user.
         """
@@ -71,7 +71,7 @@ class APIService:
 
         return result.scalars().all()
     
-    async def delete_apikey(self, db: AsyncSession, label: str, user_id: int):
+    async def delete_apikey(self, db: AsyncSession, label: str, user_id: int) -> Dict:
         """
         Permanently delete an API key by its label.
         """
@@ -170,7 +170,7 @@ class APIService:
 
         return {"message": f"API Key {key_id} updated successfully."}
     
-    async def verify_key_and_get_key(self, key: str, db: AsyncSession):
+    async def verify_key_and_get_key(self, key: str, db: AsyncSession) -> APIKey:
         """
         Verify API key.
         """
@@ -193,3 +193,36 @@ class APIService:
             )       
 
         return api_key_db
+    
+    async def roll_apikey(self, user_id: int, key_id: int, db: AsyncSession) -> dict:
+        stmt = (
+            select(APIKey).
+            where(APIKey.user_id == user_id, APIKey.key_id==key_id)
+        )
+
+        res = await db.execute(stmt)
+
+        apikey_db = res.scalar_one_or_none()
+
+        if not apikey_db:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"APIKey {key_id} not found."
+            )
+        
+        generated_token = SecurityUtils.create_api_token()
+
+        if settings.ENVIRONMENT == "prod":
+            key = f"sk_live_{generated_token}"
+        else:
+            key = f"sk_test_{generated_token}"
+        
+        prefix = key[:10]
+        hashed_key = SecurityUtils.get_hashed_token(key[10:])
+
+        apikey_db.prefix = prefix
+        apikey_db.key = hashed_key
+
+        await db.commit()
+
+        return {"key": key, "label": apikey_db.label}

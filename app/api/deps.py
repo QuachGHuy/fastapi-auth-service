@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import Depends, Security, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, APIKeyHeader
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -86,4 +88,7 @@ async def validate_apikey(
             detail="API Key is inactive/revoked.",  
         )
     
+    api_key_db.last_used_at = datetime.now(timezone.utc)
+    await db.commit()
+
     return api_key_db
