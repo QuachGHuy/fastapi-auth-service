@@ -98,7 +98,25 @@ async def update_apikey(
         db=db,
     )
 
-# 5. Validation API key
+# 5. Roll API Key
+@router.post("/roll/{key_id}", response_model=APIKeyResponse, status_code=status.HTTP_200_OK)
+async def roll_apikey(
+    key_id: int, 
+    current_user: UserResponse = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)):
+
+    real_user_id = current_user.user_id
+    
+    rolled_key = await api_service.roll_apikey(
+        key_id=key_id,
+        user_id=real_user_id,
+        db=db
+    )
+
+    return rolled_key
+
+# 6. Validation API Key
 @router.get("/protected-api", status_code=status.HTTP_200_OK)
 async def get_data(apikey: APIKeyResponse = Depends(validate_apikey)):
     return apikey
+
