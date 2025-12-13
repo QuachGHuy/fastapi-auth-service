@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.schemas.user import UserResponse
-from app.schemas.apikey import APIKeyCreate, APIKeyResponse, APIKeyUpdate
+from app.schemas.apikey import APIKeyCreate, APIKeyResponse, APIKeyUpdate, APIKeyInfo
 from app.services.api_service import APIService
 from app.api.deps import get_current_user, validate_apikey
 
@@ -33,7 +33,7 @@ async def create_apikey(
     )
 
 # 2. Get all API Keys
-@router.get("/", response_model=List[APIKeyResponse], status_code=status.HTTP_200_OK)
+@router.get("/", response_model=List[APIKeyInfo], status_code=status.HTTP_200_OK)
 async def read_apikey(
     current_user: UserResponse = Depends(get_current_user), 
     db: AsyncSession = Depends(get_db)

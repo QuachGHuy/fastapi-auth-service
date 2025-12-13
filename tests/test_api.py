@@ -45,13 +45,7 @@ async def test_create_apikey_success(client: AsyncClient, auth_headers):
     # Verify response structure
     data = response.json()
     assert data["label"] == apikey_payload["label"]
-    assert data["description"] == apikey_payload["description"]
-
     assert "key" in data
-
-    assert data["is_active"] is True
-    assert "key_id" in data
-    assert "created_at" in data
 
 @pytest.mark.asyncio
 async def test_read_apikey_success(client: AsyncClient, auth_headers):
@@ -85,9 +79,6 @@ async def test_read_apikey_success(client: AsyncClient, auth_headers):
     assert "key_id" in data[0]
     assert "created_at" in data[0]
 
-    # Verify key is hashed
-    assert "key" in data[0]
-    assert data[0]["key"] != "sk*"
 
 @pytest.mark.asyncio
 async def test_delete_apikey_success(client: AsyncClient, auth_headers):
@@ -141,13 +132,12 @@ async def test_update_apikey_label_description_success(client: AsyncClient, auth
 
     # Update apikey data
     apikey_data = {
-        "key_id": key_id,
         "label": "changed_label",
         "description": "changed_label"
     }
 
     response = await client.patch(
-        "/api/v1/keys/update",
+        f"/api/v1/keys/update/{key_id}",
         json=apikey_data,
         headers=auth_headers
     )
@@ -157,7 +147,7 @@ async def test_update_apikey_label_description_success(client: AsyncClient, auth
 
     # Check response message
     data = response.json()
-    assert data["message"] == f"API Key {apikey_data["key_id"]} updated successfully."
+    assert data["message"] == f"API Key {key_id} updated successfully."
 
 @pytest.mark.asyncio
 async def test_update_apikey_status_success(client: AsyncClient, auth_headers):
@@ -178,12 +168,11 @@ async def test_update_apikey_status_success(client: AsyncClient, auth_headers):
 
     # Update apikey data
     apikey_data = {
-        "key_id": key_id,
         "is_active": False
     }
 
     response = await client.patch(
-        "/api/v1/keys/update",
+        f"/api/v1/keys/update/{key_id}",
         json=apikey_data,
         headers=auth_headers
     )
@@ -193,7 +182,77 @@ async def test_update_apikey_status_success(client: AsyncClient, auth_headers):
 
     # Check response message
     data = response.json()
-    assert data["message"] == f"API Key {apikey_data["key_id"]} updated successfully."
+    assert data["message"] == f"API Key {key_id} updated successfully."
+
+@pytest.mark.asyncio
+async def test_roll_apikey_success(client: AsyncClient, auth_headers):
+    apikey_payload = {
+        "label": "test01",
+        "description": "this key is used for testing"
+    }
+
+    # Create new apikey and get key_id
+    apikey_db = await client.post(
+        "api/v1/keys/create",
+        json=apikey_payload,
+        headers=auth_headers
+    )
+
+    apikey_db = apikey_db.json()
+    key_id = apikey_db["key_id"]
+
+    # Roll apikey
+    key_roll = {"key_id": key_id}
+    
+    response = await client.post(
+        f"api/v1/keys/roll/{key_id}",
+        json=key_roll,
+        headers=auth_headers
+    )
+
+    # Verify status code
+    assert response.status_code == 200, f"Error:{response.text}"
+
+    # Check data response
+    data = response.json()
+    assert "key_id" in data
+    assert data["key_id"] == key_id
+    assert "label" in data
+    assert "key" in data
+    assert data["key"].startswith("sk_")
+
+@pytest.mark.asyncio
+async def test_validate_apikey_success(client: AsyncClient, auth_headers):
+    apikey_payload = {
+        "label": "test01",
+        "description": "this key is used for testing"
+    }
+
+    # Create new apikey and get key
+    apikey_db = await client.post(
+        "api/v1/keys/create",
+        json=apikey_payload,
+        headers=auth_headers
+    )
+
+    apikey_db = apikey_db.json()
+    key = apikey_db["key"]
+
+    # Validate key
+    key_header = {"X-API-Key": key}
+
+    response = await client.get(
+        "api/v1/keys/protected-api",
+        headers=key_header,
+    )
+
+    # Verify status code
+    assert response.status_code == 200, f"Error:{response.text}"
+
+    # Check data responde
+    data = response.json()
+    assert "last_used_at" in data
+
 
 # --- EDGE CASE ---
 @pytest.mark.asyncio
@@ -296,11 +355,10 @@ async def test_update_apikey_no_field_input(client: AsyncClient, auth_headers):
 
     # Update apikey data
     apikey_data = {
-        "key_id": key_id,
     }
 
     response = await client.patch(
-        "/api/v1/keys/update",
+        f"/api/v1/keys/update/{key_id}",
         json=apikey_data,
         headers=auth_headers
     )
@@ -338,12 +396,11 @@ async def test_update_apikey_label_duplicate(client: AsyncClient, auth_headers):
 
     # Update apikey_2's label by the same label of apikey_1
     apikey_data = {
-        "key_id": key_id_2,
         "label": apikey_1["label"],
     }
 
     response = await client.patch(
-        "/api/v1/keys/update",
+        f"/api/v1/keys/update/{key_id_2}",
         json=apikey_data,
         headers=auth_headers
     )
@@ -374,12 +431,11 @@ async def test_update_apikey_status_redundant(client: AsyncClient, auth_headers)
 
     # Update status by True -- default is True
     apikey_data = {
-        "key_id": key_id,
         "is_active": True,
     }
 
     response = await client.patch(
-        "/api/v1/keys/update",
+        f"/api/v1/keys/update/{key_id}",
         json=apikey_data,
         headers=auth_headers
     )
@@ -391,3 +447,111 @@ async def test_update_apikey_status_redundant(client: AsyncClient, auth_headers)
     data = response.json()
     status_str = "active" if apikey_data["is_active"] else "inactive"
     assert data["detail"] == f"API key is already {status_str}."
+
+@pytest.mark.asyncio
+async def test_roll_apikey_wrong_key_id(client: AsyncClient, auth_headers):
+    apikey_payload = {
+        "label": "test01",
+        "description": "this key is used for testing"
+    }
+    
+    # Create a new apikey and get key_id
+    await client.post(
+        "/api/v1/keys/create", 
+        json=apikey_payload, 
+        headers=auth_headers
+    )
+
+    key_id = 12
+
+    # Roll apikey
+    response = await client.post(
+        f"/api/v1/keys/roll/{key_id}",
+        json=key_id,
+        headers=auth_headers
+    )
+
+    # Verify status code
+    assert response.status_code == 404, f"Error:{response.text}"
+
+    # Check response message
+    data = response.json()
+    assert data["detail"] == f"APIKey {key_id} not found."
+
+@pytest.mark.asyncio
+async def test_validate_apikey_wrong_key(client: AsyncClient, auth_headers):
+    apikey_payload = {
+        "label": "test01",
+        "description": "this key is used for testing"
+    }
+    
+    # Create a new apikey and get key
+    key_db = await client.post(
+        "/api/v1/keys/create", 
+        json=apikey_payload, 
+        headers=auth_headers
+    )
+
+    key_db = key_db.json()
+    key = key_db["key"]
+    unvalid_key = "thisisunvalidkeyfortesting"
+
+    # Validate apikey
+    header = {"X-API-KEY": unvalid_key}
+    response = await client.get(
+        "/api/v1/keys/protected-api",
+        headers=header
+    )
+
+    # Check test apikey != real apikey
+    assert key != unvalid_key
+
+    # Verify status code
+    assert response.status_code == 401, f"Error:{response.text}"
+
+    # Check response message
+    data = response.json()
+    assert data["detail"] == "Invalid or unauthorized access."
+
+@pytest.mark.asyncio
+async def test_validate_apikey_inactive(client: AsyncClient, auth_headers):
+    apikey_payload = {
+        "label": "test01",
+        "description": "this key is used for testing"
+    }
+    
+    # Create a new apikey and get key
+    key_db = await client.post(
+        "/api/v1/keys/create", 
+        json=apikey_payload, 
+        headers=auth_headers
+    )
+
+    key_db = key_db.json()
+    key_id = key_db["key_id"]
+    key = key_db["key"]
+    
+    # Update status
+    key_update = {
+        "key_id": key_id,
+        "is_active": False
+    }
+    await client.patch(
+        f"/api/v1/keys/update/{key_id}",
+        json=key_update,
+        headers=auth_headers
+    )
+
+    # Validate apikey
+    header = {"X-API-KEY": key}
+    response = await client.get(
+        "/api/v1/keys/protected-api",
+        headers=header
+    )
+
+    # Verify status code
+    assert response.status_code == 403, f"Error: {response.text}"
+
+    # Check response message
+    data = response.json()
+    assert data["detail"] == "API Key is inactive/revoked."

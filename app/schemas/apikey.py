@@ -7,6 +7,7 @@ class APIKeyCreate(BaseModel):
     description: Optional[str] = None
 
 class APIKeyResponse(BaseModel):
+    key_id: int
     key: str
     label: str
 
