@@ -225,4 +225,4 @@ class APIService:
 
         await db.commit()
 
-        return {"key": key, "label": apikey_db.label}
+        return {"key_id": apikey_db.key_id, "key": key, "label": apikey_db.label}
