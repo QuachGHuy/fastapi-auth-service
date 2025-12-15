@@ -34,12 +34,11 @@ Built with a modern stack focused on **Performance**, **Scalability**, and **Dev
 - [x] **Resilience:** Database health-checks to prevent startup race conditions.
 - [x] **Architecture:** Clean/Layered Architecture (Router - Service - CRUD - Schema).
 - [x] **Production Ready:** Dockerized with Dev/Prod environment separation.
+- [x] **API Key Management:** For Server-to-Server communication.
 
 ## 🗺️ Roadmap
 
 Future improvements:
-
-- [ ] **API Key Management:** For Server-to-Server communication.
 - [ ] **Social Login:** Google integration.
 - [ ] **Refresh Token:** Long-lived sessions with rotation.
 - [ ] **RBAC:** Role-based access control (Admin vs User).
