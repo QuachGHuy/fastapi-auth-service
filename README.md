@@ -36,13 +36,6 @@ Built with a modern stack focused on **Performance**, **Scalability**, and **Dev
 - [x] **Production Ready:** Dockerized with Dev/Prod environment separation.
 - [x] **API Key Management:** For Server-to-Server communication.
 
-## 🗺️ Roadmap
-
-Future improvements:
-- [ ] **Social Login:** Google integration.
-- [ ] **Refresh Token:** Long-lived sessions with rotation.
-- [ ] **RBAC:** Role-based access control (Admin vs User).
-
 ## 🚀 Quick Start
 
 Get the system running in **3 steps**:
